@@ -1,0 +1,1 @@
+# Functions to dictate how environment/agent reacts to movement/how things move around. Kind of the "miscellaneous" file.
