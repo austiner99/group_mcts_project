@@ -25,9 +25,9 @@ class GreedyAgent(AbstractAgent):
         for action in env.action_space:
             x, y = agent_pos
             if action == 'up':
-                new_pos = (x, y + 1)
-            elif action == 'down':
                 new_pos = (x, y - 1)
+            elif action == 'down':
+                new_pos = (x, y + 1)
             elif action == 'left':
                 new_pos = (x - 1, y)
             elif action == 'right':

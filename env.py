@@ -56,9 +56,9 @@ class GridWorld:
         return self.get_state(), reward, done
     
     def move_agent(self, action):
-        if action == 'down' and self.agent_pos[1] > 0:
+        if action == 'up' and self.agent_pos[1] > 0:
             self.agent_pos[1] -= 1
-        elif action == 'up' and self.agent_pos[1] < self.size - 1:
+        elif action == 'down' and self.agent_pos[1] < self.size - 1:
             self.agent_pos[1] += 1
         elif action == 'left' and self.agent_pos[0] > 0:
             self.agent_pos[0] -= 1
