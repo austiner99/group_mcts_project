@@ -5,53 +5,56 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-# Example state for visualization
-size = random.randint(10, 30)  # Example grid size
-
-agent_pos = (random.randint(size//2, size-1), random.randint(size//2, size-1))
-goal_pos = (random.randint(0, size//2), random.randint(0, size//2))
-if agent_pos == goal_pos:
-    goal_pos = ((goal_pos[0] + 1) % size, goal_pos[1])  # Ensure agent and goal are not the same
-obstacles = set()
-while len(obstacles) < 10:
-    pos = (random.randint(0, size-1), random.randint(0, size-1))
-    if pos != agent_pos and pos != goal_pos and pos not in obstacles:
-        obstacles.add(pos)
-
-prev_agent_pos = (agent_pos[0]-1, agent_pos[1]) if agent_pos[0] > 0 else (agent_pos[0], agent_pos[1]-1)
-prev_obstacles = set()
-for obs in obstacles:
-    new_obs = (obs[0]-1, obs[1]) if obs[0] > 0 else (obs[0], obs[1]-1)
-    prev_obstacles.add(new_obs)
-prev_state = (prev_agent_pos, goal_pos, tuple(prev_obstacles))  # Example previous state; can be set to visualize movement
-state = (agent_pos, goal_pos, tuple(obstacles))  # Example state: (agent_pos, goal_pos, obstacles)
-
-def visualize_environment(size, state, prev_state=None):
-    agent_pos, goal_pos, obstacles = state
-    grid = np.zeros((size, size, 3), dtype=np.uint8) + 255  # White background
-
-    #if previous state is given, show the movement with a faded blue trail, and faded gray for previous obstacle positions
-    if prev_state:
-        prev_agent_pos, _, prev_obstacles = prev_state
-        grid[prev_agent_pos[1], prev_agent_pos[0]] = [173, 216, 230]  # Light blue for previous position
-        for obs in prev_obstacles:
-            grid[obs[1], obs[0]] = [211, 211, 211]  # Light gray for previous obstacles
-
-    # Draw obstacles in black
-    for obs in obstacles:
-        grid[obs[1], obs[0]] = [0, 0, 0]
-
-    # Draw goal in green
-    grid[goal_pos[1], goal_pos[0]] = [0, 255, 0]
-
-    # Draw agent in blue
-    grid[agent_pos[1], agent_pos[0]] = [0, 0, 255]
-
-    plt.imshow(grid)
-    ax = plt.gca()
-    ax.add_patch(plt.Rectangle((-0.5, -0.5), size, size, fill=False, edgecolor='black', linewidth=2))
-    plt.axis('off')
-    plt.show()
+def visualize_environment(size, state_vec):
+    '''
+    Function visualizes the grid environment based on the state vector, which includes the all agent's positions, goal positions, 
+    and obstacles positions. It also shows the current location of all objects in clear colors, as well as the previous path of the
+    agent (getting more faded the further back in time, up to 5 timesteps) and previous obstacle positions (faded gray) if a 
+    previous state is provided. The states should update as we progress through the states, showing the movement of the agent and
+    obstacles over time.
     
-
-visualize_environment(size, state, prev_state)
+    :param size: size of the grid environment (e.g., 10 for a 10x10 grid)
+    :param state_vec: List of states to visualize, where each state is a tuple (agent_pos, goal_pos, obstacles)
+    '''
+    plt.figure(figsize=(6, 6))
+    if not state_vec:
+        print("No states to visualize.")
+        return
+    for i in range(len(state_vec)):
+        #initialize grid
+        grid = np.zeros((size, size, 3), dtype=np.uint8) + 255  # White background
+        #plot previous state with faded colors
+        for j in range(5, 0, -1):
+            if i-j >= 0:
+                fade_value = 60+39*j  # 255/5 = 51, so each step back is 51 less in intensity
+                agent_pos, goal_pos, obstacles = state_vec[i-j]
+                # grid = np.zeros((size, size, 3), dtype=np.uint8) + 255
+                for obs in obstacles:
+                    grid[obs] = [255, fade_value, fade_value]  # Obstacles in red
+                grid[agent_pos] = [fade_value, fade_value, 255]  # Agent in blue
+        # plot current state with full colors
+        agent_pos, goal_pos, obstacles = state_vec[i]
+        # grid = np.zeros((size, size, 3), dtype=np.uint8) + 255
+        grid[goal_pos] = [0, 255, 0]  # Goal in green
+        for obs in obstacles:
+            grid[obs] = [255, 0, 0]  # Obstacles in red
+        grid[agent_pos] = [0, 0, 255]  # Agent in blue
+        plt.imshow(grid)
+        plt.title(f"State {i}")
+        plt.axis('on')
+        ax = plt.gca()
+        ax.set_xticks(np.arange(-0.5, size, 1), minor=True)
+        ax.set_yticks(np.arange(-0.5, size, 1), minor=True)
+        ax.grid(which='minor', color='black', linestyle='-', linewidth=0.5)
+        plt.pause(1)
+        # plt.close()
+    
+size = 10
+state_vec = [((0, 0), (9, 9), [(2, 2), (3, 3)]), \
+            ((1, 0), (9, 9), [(2, 1), (3, 4)]), \
+            ((2, 0), (9, 9), [(1, 1), (4, 4)]), \
+            ((3, 0), (9, 9), [(1, 2), (5, 4)]), \
+            ((4, 0), (9, 9), [(1, 3), (4, 4)]), \
+            ((4, 1), (9, 9), [(1, 4), (4, 3)]), \
+            ((4, 2), (9, 9), [(1, 5), (3, 3)])]  # Example state vector with 5 states showing agent movement
+visualize_environment(size, state_vec)
