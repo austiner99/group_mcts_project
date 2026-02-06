@@ -9,10 +9,10 @@ GOAL_REWARD = 20 # Reward for reaching the goal
 RANDOM_OBSTACLE_MOVE_PROB = 0.7  # Probability that an obstacle will move at each time step
 
 class GridWorld:
-    def __init__(self, size=10, slip_prob=0.1, obstacles=0):
+    def __init__(self, size=10, slip_prob=0.1, num_obstacles=0):
         self.size = size
         self.slip_prob = slip_prob
-        self.obstacles = obstacles
+        self.num_obstacles = num_obstacles
         self.action_space = ['up', 'down', 'left', 'right']
         self.state_history = [self.get_state()]  # To keep track of states for visualization
         self.reset()
@@ -26,7 +26,7 @@ class GridWorld:
         
     def generate_obstacles(self):
         obs = set()
-        while len(obs) < self.obstacles:
+        while len(obs) < self.num_obstacles:
             pos = (random.randint(0, self.size - 1), random.randint(0, self.size - 1))
             if pos != tuple(self.agent_pos) and pos != tuple(self.goal_pos) and pos not in obs:
                 obs.add(pos)
