@@ -61,7 +61,7 @@ def visualize_environment(size, state_vec):
         ax.set_xticks(np.arange(-0.5, size, 1), minor=True)
         ax.set_yticks(np.arange(-0.5, size, 1), minor=True)
         ax.grid(which='minor', color='black', linestyle='-', linewidth=0.5)
-        plt.pause(1)
+        plt.pause(0.5)
         # plt.close()
     
 size = 10

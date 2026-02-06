@@ -14,6 +14,7 @@ class GridWorld:
         self.slip_prob = slip_prob
         self.obstacles = obstacles
         self.action_space = ['up', 'down', 'left', 'right']
+        self.state_history = []  # To keep track of states for visualization
         self.reset()
         
     def reset(self):
@@ -33,10 +34,13 @@ class GridWorld:
     def get_state(self):
         return (tuple(self.agent_pos), tuple(self.goal_pos), tuple(map(tuple, self.obstacles)))
     
+    def save_state_to_history(self):
+        self.state_history.append(self.get_state())
+    
     def step(self, action):
-        agent_position, goal_position, obstacles = self.get_state()
-        self.agent_pos = list(agent_position)
-        self.obstacles = [list(obs) for obs in obstacles]
+        # agent_position, goal_position, obstacles = self.get_state()
+        # self.agent_pos = list(agent_position)
+        # self.obstacles = [list(obs) for obs in obstacles]
         
         if random.random() < self.slip_prob:
             action = random.choice(self.action_space)
@@ -52,7 +56,8 @@ class GridWorld:
         elif self.agent_pos == self.goal_pos:
             reward = GOAL_REWARD  
             done = True
-            
+         
+        self.save_state_to_history()   
         return self.get_state(), reward, done
     
     def move_agent(self, action):
