@@ -5,6 +5,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
+def plot_reward_over_time(reward_history):
+    '''
+    Plots the reward history over time to visualize the learning progress of the agent.
+    
+    :param reward_history: List of rewards received at each time step.
+    '''
+    plt.figure(figsize=(10, 5))
+    plt.plot(reward_history, label='Reward over Time')
+    plt.xlabel('Time Step')
+    plt.ylabel('Reward')
+    plt.title('Reward History')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
 def visualize_environment(size, state_vec):
     '''
     Function visualizes the grid environment based on the state vector, which includes the all agent's positions, goal positions, 
@@ -56,5 +71,14 @@ state_vec = [((0, 0), (9, 9), [(2, 2), (3, 3)]), \
             ((3, 0), (9, 9), [(1, 2), (5, 4)]), \
             ((4, 0), (9, 9), [(1, 3), (4, 4)]), \
             ((4, 1), (9, 9), [(1, 4), (4, 3)]), \
-            ((4, 2), (9, 9), [(1, 5), (3, 3)])]  # Example state vector with 5 states showing agent movement
+            ((4, 2), (9, 9), [(1, 5), (4, 4)]), \
+            ((4, 3), (9, 9), [(1, 4), (5, 4)]), \
+            ((5, 3), (9, 9), [(1, 3), (4, 4)]), \
+            ((5, 4), (9, 9), [(2, 3), (3, 4)]), \
+            ((5, 5), (9, 9), [(3, 3), (4, 4)]), \
+            ((5, 6), (9, 9), [(4, 3), (4, 5)]), \
+            ((5, 7), (9, 9), [(5, 3), (4, 6)])]  # Example state vector with 5 states showing agent movement
 visualize_environment(size, state_vec)
+
+reward_history = [0, -1, -1, -1, 20, 0, -1, 20]  # Example reward history
+plot_reward_over_time(reward_history)
