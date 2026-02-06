@@ -14,13 +14,14 @@ class GridWorld:
         self.slip_prob = slip_prob
         self.obstacles = obstacles
         self.action_space = ['up', 'down', 'left', 'right']
-        self.state_history = []  # To keep track of states for visualization
+        self.state_history = [self.get_state()]  # To keep track of states for visualization
         self.reset()
         
     def reset(self):
         self.agent_pos = [0, 0]  # START AT TOP-LEFT CORNER - COULD BE MODIFIED TO RANDOM START
         self.goal_pos = [self.size - 1, self.size - 1]  # Goal at bottom-right corner - COULD BE MODIFIED TO RANDOM GOAL
         self.obstacles = self.generate_obstacles()
+        self.state_history = [self.get_state()]  # Clear state history on reset and add initial state
         return self.agent_pos
         
     def generate_obstacles(self):
