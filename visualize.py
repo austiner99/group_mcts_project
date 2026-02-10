@@ -20,7 +20,7 @@ def plot_reward_over_time(reward_history):
     plt.grid()
     plt.show()
 
-def visualize_environment(size, state_vec):
+def visualize_environment(size, state_vec, figure_title="Grid Environment Visualization"):
     '''
     Function visualizes the grid environment based on the state vector, which includes the all agent's positions, goal positions, 
     and obstacles positions. It also shows the current location of all objects in clear colors, as well as the previous path of the
@@ -54,6 +54,8 @@ def visualize_environment(size, state_vec):
         for obs in obstacles:
             grid[obs] = [255, 0, 0]  # Obstacles in red
         grid[agent_pos] = [0, 0, 255]  # Agent in blue
+
+        plt.suptitle(figure_title, fontsize=16)
         plt.imshow(grid)
         plt.title(f"State {i}")
         plt.axis('on')
@@ -63,22 +65,23 @@ def visualize_environment(size, state_vec):
         ax.grid(which='minor', color='black', linestyle='-', linewidth=0.5)
         plt.pause(0.5)
         # plt.close()
-    
-size = 10
-state_vec = [((0, 0), (9, 9), [(2, 2), (3, 3)]), \
-            ((1, 0), (9, 9), [(2, 1), (3, 4)]), \
-            ((2, 0), (9, 9), [(1, 1), (4, 4)]), \
-            ((3, 0), (9, 9), [(1, 2), (5, 4)]), \
-            ((4, 0), (9, 9), [(1, 3), (4, 4)]), \
-            ((4, 1), (9, 9), [(1, 4), (4, 3)]), \
-            ((4, 2), (9, 9), [(1, 5), (4, 4)]), \
-            ((4, 3), (9, 9), [(1, 4), (5, 4)]), \
-            ((5, 3), (9, 9), [(1, 3), (4, 4)]), \
-            ((5, 4), (9, 9), [(2, 3), (3, 4)]), \
-            ((5, 5), (9, 9), [(3, 3), (4, 4)]), \
-            ((5, 6), (9, 9), [(4, 3), (4, 5)]), \
-            ((5, 7), (9, 9), [(5, 3), (4, 6)])]  # Example state vector with 5 states showing agent movement
-visualize_environment(size, state_vec)
 
-reward_history = [0, -1, -1, -1, 20, 0, -1, 20]  # Example reward history
-plot_reward_over_time(reward_history)
+if __name__ == "__main__":
+    size = 10
+    state_vec = [((0, 0), (9, 9), [(2, 2), (3, 3)]), \
+                ((1, 0), (9, 9), [(2, 1), (3, 4)]), \
+                ((2, 0), (9, 9), [(1, 1), (4, 4)]), \
+                ((3, 0), (9, 9), [(1, 2), (5, 4)]), \
+                ((4, 0), (9, 9), [(1, 3), (4, 4)]), \
+                ((4, 1), (9, 9), [(1, 4), (4, 3)]), \
+                ((4, 2), (9, 9), [(1, 5), (4, 4)]), \
+                ((4, 3), (9, 9), [(1, 4), (5, 4)]), \
+                ((5, 3), (9, 9), [(1, 3), (4, 4)]), \
+                ((5, 4), (9, 9), [(2, 3), (3, 4)]), \
+                ((5, 5), (9, 9), [(3, 3), (4, 4)]), \
+                ((5, 6), (9, 9), [(4, 3), (4, 5)]), \
+                ((5, 7), (9, 9), [(5, 3), (4, 6)])]  # Example state vector with 5 states showing agent movement
+    visualize_environment(size, state_vec)
+
+    reward_history = [0, -1, -1, -1, 20, 0, -1, 20]  # Example reward history
+    plot_reward_over_time(reward_history)
