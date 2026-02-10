@@ -4,8 +4,8 @@ import random
 
 global MOVEMENT_REWARD, OBSTACLE_PENALTY, GOAL_REWARD, RANDOM_OBSTACLE_MOVE_PROB #variable sthat can be modified from config.py
 MOVEMENT_REWARD = -1 # Penalty for each movement to encourage shorter paths
-OBSTACLE_PENALTY = -10 # Penalty for hitting an obstacle
-GOAL_REWARD = 20 # Reward for reaching the goal
+OBSTACLE_PENALTY = -25 # Penalty for hitting an obstacle
+GOAL_REWARD = 50 # Reward for reaching the goal
 RANDOM_OBSTACLE_MOVE_PROB = 0.7  # Probability that an obstacle will move at each time step
 
 class GridWorld:
@@ -14,7 +14,7 @@ class GridWorld:
         self.slip_prob = slip_prob
         self.num_obstacles = num_obstacles
         self.action_space = ['up', 'down', 'left', 'right']
-        self.state_history = [self.get_state()]  # To keep track of states for visualization
+        self.state_history = []  # To keep track of states for visualization
         self.reset()
         
     def reset(self):
@@ -41,7 +41,7 @@ class GridWorld:
     def step(self, action):
         # agent_position, goal_position, obstacles = self.get_state()
         # self.agent_pos = list(agent_position)
-        # self.obstacles = [list(obs) for obs in obstacles]
+        self.obstacles = [list(obs) for obs in self.obstacles]
         
         if random.random() < self.slip_prob:
             action = random.choice(self.action_space)

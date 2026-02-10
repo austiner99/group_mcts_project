@@ -44,7 +44,7 @@ if __name__ == "__main__":
     print("\n============== Random Agent ==============")
 
     agent = RandomAgent() 
-    run_experiment(env, agent, num_trials=10)
+    run_experiment(env, agent, num_trials=5)
 
     state_vec = env.state_history  
     visualize_environment(10, state_vec, figure_title="Random Agent")
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     print("\n============= Greedy Agent ==============")
     
     agent = GreedyAgent()
-    run_experiment(env, agent, num_trials=10)
+    run_experiment(env, agent, num_trials=5)
 
     state_vec = env.state_history  
     visualize_environment(10, state_vec, figure_title="Greedy Agent")

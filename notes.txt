@@ -1,0 +1,4 @@
+Notes for meeting on 2/10/26
+- graphs
+    - box and whiskers (method on x, score on y over n trials)
+    - 
