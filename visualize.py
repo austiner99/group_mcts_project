@@ -3,7 +3,6 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import random
 
 def plot_reward_over_time(reward_history):
     '''
@@ -31,33 +30,44 @@ def visualize_environment(size, state_vec, figure_title="Grid Environment Visual
     :param size: size of the grid environment (e.g., 10 for a 10x10 grid)
     :param state_vec: List of states to visualize, where each state is a tuple (agent_pos, goal_pos, obstacles)
     '''
-    plt.figure(figsize=(6, 6))
+    # plt.figure(figsize=(6, 6))
     if not state_vec:
         print("No states to visualize.")
         return
+    exit_flag = False
+    
+    def on_key(event):
+        nonlocal exit_flag
+        if event.key == 'q':
+            exit_flag = True
+            plt.close('all')
+    
+    fig = plt.figure(figsize=(10, 8))
+    fig.canvas.mpl_connect('key_press_event', on_key)
+    
     for i in range(len(state_vec)):
-        #initialize grid
-        grid = np.zeros((size, size, 3), dtype=np.uint8) + 255  # White background
-        #plot previous state with faded colors
+        if exit_flag:
+            break
+        
+        grid = np.zeros((size, size, 3), dtype=np.uint8) + 255
         for j in range(5, 0, -1):
             if i-j >= 0:
-                fade_value = 60+39*j  # 255/5 = 51, so each step back is 51 less in intensity
+                fade_value = 60+39*j
                 agent_pos, goal_pos, obstacles = state_vec[i-j]
-                # grid = np.zeros((size, size, 3), dtype=np.uint8) + 255
                 for obs in obstacles:
-                    grid[obs] = [255, fade_value, fade_value]  # Obstacles in red
-                grid[agent_pos] = [fade_value, fade_value, 255]  # Agent in blue
-        # plot current state with full colors
+                    grid[obs] = [255, fade_value, fade_value]
+                grid[agent_pos] = [fade_value, fade_value, 255]
+        
         agent_pos, goal_pos, obstacles = state_vec[i]
-        # grid = np.zeros((size, size, 3), dtype=np.uint8) + 255
-        grid[goal_pos] = [0, 255, 0]  # Goal in green
+        grid[goal_pos] = [0, 255, 0]
         for obs in obstacles:
-            grid[obs] = [255, 0, 0]  # Obstacles in red
-        grid[agent_pos] = [0, 0, 255]  # Agent in blue
+            grid[obs] = [255, 0, 0]
+        grid[agent_pos] = [0, 0, 255]
 
+        plt.clf()
         plt.suptitle(figure_title, fontsize=16)
         plt.imshow(grid)
-        plt.title(f"State {i}")
+        plt.title(f"State {i} (Press 'q' to exit)")
         plt.axis('on')
         ax = plt.gca()
         ax.set_xticks(np.arange(-0.5, size, 1), minor=True)
