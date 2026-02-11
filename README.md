@@ -30,3 +30,15 @@ The algorithm can be evaluated against random and greedy algorithms (not totally
 5. visualize.py - displays current state of experiment while running. Can also generate figures for project presentation
 
 6. config.py - functions to dictate how enviornment/agent reacts to movement/how things move around. Kind of the "miscellaneous" file
+
+### Instructions
+
+1. Install dependencies in requirements.txt.
+
+2. Run [run_experiment.py](run_experiment.py).
+
+3. A visualization of a trial with each agent will pop up. The blue square is the agent, red are obstacles, and green is the goal. You can exit by pressing 'q'.
+
+4. After the visualizations have been completed, a box and wisker plot will show the distribution of scores for each agent. 
+
+5. After the previous plot is closed, a bar plot will show the number of times each agent successfully reached the goal without hitting an obstacle. 
