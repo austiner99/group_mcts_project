@@ -67,7 +67,7 @@ def visualize_environment(size, state_vec, figure_title="Grid Environment Visual
         plt.clf()
         plt.suptitle(figure_title, fontsize=16)
         plt.imshow(grid)
-        plt.title(f"State {i} (Press 'q' to exit)")
+        plt.title(f"State {i}\n(Press 'q' to exit)")
         plt.axis('on')
         ax = plt.gca()
         ax.set_xticks(np.arange(-0.5, size, 1), minor=True)

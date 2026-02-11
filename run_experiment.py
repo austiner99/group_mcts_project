@@ -1,5 +1,7 @@
 # Uses all code to run the experiment.
 
+import matplotlib.pyplot as plt
+
 from agent import AbstractAgent
 from env import GridWorld
 from baselines import *
@@ -34,17 +36,20 @@ def run_experiment(world:GridWorld, agent:AbstractAgent, num_trials:int):
     print(f"\nAverage Score over {num_trials} trials: {avg_score}")
     print(f"Number of times goal reached: {num_time_goal_reached} out of {num_trials}")
 
+    return scores, num_time_goal_reached
+
 
 
 
 if __name__ == "__main__":
     # Example usage
     env = GridWorld(size=10, slip_prob=0.1, num_obstacles=5)
+    NUM_TRIALS = 100
 
     print("\n============== Random Agent ==============")
 
     agent = RandomAgent() 
-    run_experiment(env, agent, num_trials=5)
+    random_scores, random_success = run_experiment(env, agent, num_trials=NUM_TRIALS)
 
     state_vec = env.state_history  
     visualize_environment(10, state_vec, figure_title="Random Agent")
@@ -52,10 +57,25 @@ if __name__ == "__main__":
     print("\n============= Greedy Agent ==============")
     
     agent = GreedyAgent()
-    run_experiment(env, agent, num_trials=5)
+    greedy_scores, greedy_success = run_experiment(env, agent, num_trials=NUM_TRIALS)
 
     state_vec = env.state_history  
     visualize_environment(10, state_vec, figure_title="Greedy Agent")
+
+    # Box and whisker plot for score distribution
+    plt.figure(figsize=(8, 6))
+    plt.boxplot([random_scores, greedy_scores], labels=['Random Agent', 'Greedy Agent'])
+    plt.title('Comparison of Agent Scores\n(Press "q" to exit)')
+    plt.ylabel('Total Reward')
+    plt.grid()
+    plt.show()
+
+    # Bar plot for number of times goal reached
+    plt.bar(['Random Agent', 'Greedy Agent'], [random_success, greedy_success])
+    plt.title('Number of Times Goal Reached\n(Press "q" to exit)')
+    plt.ylabel('Count')
+    plt.grid(axis='y')
+    plt.show()
 
 
 
