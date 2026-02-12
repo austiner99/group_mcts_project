@@ -51,7 +51,7 @@ def select(node: Node) -> Node:
 def expand(node: Node) -> Node:
     """Expansion: Add a new child node for an untried action."""
     action = node.untried_actions.pop()
-    next_env = node.env.clone()
+    next_env = node.env.clone() # Another issue might be here. This is saving the stochasticity of the environment which block it from exploring different states
     next_env.step(action)
     child_node = Node(env=next_env, parent=node, action=action)
     node.children.append(child_node)
@@ -97,7 +97,7 @@ def simulate(env, rollout_depth: int = 50, epsilon=0.1) -> float:
         depth += 1
     return total_reward
 
-
+# I *think* this is where an issue is. Nodes aren't being created when you do rollout, so the backprop is only updating the starting node and its parents. 
 def backpropogate(node: Node, reward: float) -> None:
     """Backpropagate the reward up the tree."""
     while node is not None:
