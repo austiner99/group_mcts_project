@@ -1,0 +1,39 @@
+experiment:
+  num_trials: 100
+  max_steps_per_episode: null
+  print_per_trial: true
+  seed: null
+
+environment:
+  grid_size: 10
+  slip_prob: 0.1
+  num_obstacles: 15
+  obstacle_move_prob: 0.7
+  start_pos: [0, 0]
+  goal_pos: [9, 9]
+  random_start: false
+  random_goal: false
+
+rewards:
+  step: -1
+  obstacle: -25
+  goal: 50
+  terminate_on_obstacle: true
+  terminate_on_goal: true
+
+agents:
+  random:
+    enabled: true
+  greedy:
+    enabled: true
+  mcts:
+    enabled: true
+    iterations: 500
+    exploration_param: 1.4
+    rollout_depth: 30
+    rollout_policy: "random"
+    selection_policy: "uct"
+
+visualization:
+  enabled: true
+  delay: 0.1

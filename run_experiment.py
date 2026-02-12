@@ -3,12 +3,13 @@
 import matplotlib.pyplot as plt
 
 from agent import AbstractAgent
+from baselines import GreedyAgent, RandomAgent
 from env import GridWorld
-from baselines import *
+from mcts import MCTSAgent
 from visualize import visualize_environment
 
 
-def run_experiment(world:GridWorld, agent:AbstractAgent, num_trials:int):
+def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
     scores = []
     num_time_goal_reached = 0
 
@@ -39,8 +40,6 @@ def run_experiment(world:GridWorld, agent:AbstractAgent, num_trials:int):
     return scores, num_time_goal_reached
 
 
-
-
 if __name__ == "__main__":
     # Example usage
     env = GridWorld(size=10, slip_prob=0.1, num_obstacles=5)
@@ -48,34 +47,53 @@ if __name__ == "__main__":
 
     print("\n============== Random Agent ==============")
 
-    agent = RandomAgent() 
-    random_scores, random_success = run_experiment(env, agent, num_trials=NUM_TRIALS)
+    random_agent = RandomAgent()
+    random_scores, random_success = run_experiment(env, random_agent, num_trials=NUM_TRIALS)
 
-    state_vec = env.state_history  
-    visualize_environment(10, state_vec, figure_title="Random Agent")
+    random_state_vec = env.state_history
+    visualize_environment(10, random_state_vec, figure_title="Random Agent")
 
     print("\n============= Greedy Agent ==============")
-    
-    agent = GreedyAgent()
-    greedy_scores, greedy_success = run_experiment(env, agent, num_trials=NUM_TRIALS)
 
-    state_vec = env.state_history  
-    visualize_environment(10, state_vec, figure_title="Greedy Agent")
+    greedy_agent = GreedyAgent()
+    greedy_scores, greedy_success = run_experiment(env, greedy_agent, num_trials=NUM_TRIALS)
+
+    greedy_state_vec = env.state_history
+    visualize_environment(10, greedy_state_vec, figure_title="Greedy Agent")
+
+    print("\n============= MCTS Agent - Random ==============")
+
+    mcts_agent = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=50, epsilon=1.0)
+    mcts_scores, mcts_success = run_experiment(env, mcts_agent, num_trials=NUM_TRIALS)
+
+    mcts_state_vec = env.state_history
+    visualize_environment(10, mcts_state_vec, figure_title="MCTS Agent - Random")
+
+    print("\n============== MCTS Agent - Epsilon-Greedy ==============")
+
+    mcts_agent_eps = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=50, epsilon=0.1)
+    mcts_eps_scores, mcts_eps_success = run_experiment(env, mcts_agent, num_trials=NUM_TRIALS)
+
+    mcts_eps_state_vec = env.state_history
+    visualize_environment(10, mcts_eps_state_vec, figure_title="MCTS Agent - Epsilon-Greedy")
 
     # Box and whisker plot for score distribution
     plt.figure(figsize=(8, 6))
-    plt.boxplot([random_scores, greedy_scores], labels=['Random Agent', 'Greedy Agent'])
+    plt.boxplot(
+        [random_scores, greedy_scores, mcts_scores, mcts_eps_scores],
+        tick_labels=["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
+    )
     plt.title('Comparison of Agent Scores\n(Press "q" to exit)')
-    plt.ylabel('Total Reward')
+    plt.ylabel("Total Reward")
     plt.grid()
     plt.show()
 
     # Bar plot for number of times goal reached
-    plt.bar(['Random Agent', 'Greedy Agent'], [random_success, greedy_success])
+    plt.bar(
+        ["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
+        [random_success, greedy_success, mcts_success, mcts_eps_success],
+    )
     plt.title('Number of Times Goal Reached\n(Press "q" to exit)')
-    plt.ylabel('Count')
-    plt.grid(axis='y')
+    plt.ylabel("Count")
+    plt.grid(axis="y")
     plt.show()
-
-
-
