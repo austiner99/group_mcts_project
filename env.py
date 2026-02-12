@@ -4,8 +4,8 @@ import random
 
 global MOVEMENT_REWARD, OBSTACLE_PENALTY, GOAL_REWARD, RANDOM_OBSTACLE_MOVE_PROB  # variable sthat can be modified from config.py
 MOVEMENT_REWARD = -1  # Penalty for each movement to encourage shorter paths
-OBSTACLE_PENALTY = -25  # Penalty for hitting an obstacle
-GOAL_REWARD = 50  # Reward for reaching the goal
+OBSTACLE_PENALTY = -50  # Penalty for hitting an obstacle
+GOAL_REWARD = 100  # Reward for reaching the goal
 RANDOM_OBSTACLE_MOVE_PROB = 0.7  # Probability that an obstacle will move at each time step
 
 
@@ -51,6 +51,10 @@ class GridWorld:
         self.move_obstacles()
 
         reward = MOVEMENT_REWARD
+
+        dist_from_goal = abs(self.agent_pos[0] - self.goal_pos[0]) + abs(self.agent_pos[1] - self.goal_pos[1])
+        reward = -dist_from_goal/(self.size * 2)  # Normalize distance penalty
+        
         done = False
         if self.agent_pos in self.obstacles:
             reward = OBSTACLE_PENALTY

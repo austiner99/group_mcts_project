@@ -1,12 +1,14 @@
 # Uses all code to run the experiment.
 
 import matplotlib.pyplot as plt
+import time
 
 from agent import AbstractAgent
 from baselines import GreedyAgent, RandomAgent
 from env import GridWorld
 from mcts import MCTSAgent
 from visualize import visualize_environment
+
 
 
 def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
@@ -42,7 +44,7 @@ def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
 
 if __name__ == "__main__":
     # Example usage
-    env = GridWorld(size=10, slip_prob=0.1, num_obstacles=5)
+    env = GridWorld(size=10, slip_prob=0, num_obstacles=5)
     NUM_TRIALS = 100
 
     print("\n============== Random Agent ==============")
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     plt.figure(figsize=(8, 6))
     plt.boxplot(
         [random_scores, greedy_scores, mcts_scores, mcts_eps_scores],
-        tick_labels=["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
+        labels=["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
     )
     plt.title('Comparison of Agent Scores\n(Press "q" to exit)')
     plt.ylabel("Total Reward")
@@ -89,6 +91,7 @@ if __name__ == "__main__":
     plt.show()
 
     # Bar plot for number of times goal reached
+    plt.figure(figsize=(8, 8))
     plt.bar(
         ["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
         [random_success, greedy_success, mcts_success, mcts_eps_success],
