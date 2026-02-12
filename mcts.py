@@ -33,17 +33,19 @@ def is_terminal_env(env):
 
 def uct_value(parent: Node, child: Node, exploration_param: float = math.sqrt(2)) -> float:
     """Calculate the UCT value for a node."""
+    if child.visits == 0:
+        return float("inf")  # Prioritize unvisited nodes
     return child.q_value + exploration_param * math.sqrt(
         math.log(parent.visits) / (child.visits)
     )  # Q + C * sqrt(ln(N) / n)
 
 
-def select(node: Node) -> Node:
+def select(node: Node, exploration_param: float = math.sqrt(2)) -> Node:
     """Select the child node with the highest UCT value."""
     while not is_terminal_env(node.env):
         if node.untried_actions:
             return node
-        node = max(node.children, key=lambda n: uct_value(node, n))
+        node = max(node.children, key=lambda n: uct_value(node, n, exploration_param=exploration_param))
 
     return node
 
@@ -117,7 +119,7 @@ def mcts(
     """Perform Monte Carlo Tree Search and return the best action."""
     root = Node(root_env.clone())
     for _ in range(iterations):
-        node = select(root)
+        node = select(root, exploration_param=exploration_param)
         if not is_terminal_env(node.env) and node.untried_actions:
             node = expand(node)
         reward = simulate(node.env.clone(), rollout_depth=rollout_depth, epsilon=epsilon)
