@@ -22,7 +22,7 @@ class Node:
     @property
     def q_value(self) -> float:
         """Average reward of the node."""
-        return self.total_reward / self.visits if self.visits > 0 else 0.0
+        return self.total_reward / self.visits if self.visits > 0 else float("-inf")
 
 
 def is_terminal_env(env):
@@ -84,7 +84,7 @@ def rollout_policy(env, epsilon=0.1):
         if dist < best_distance and (x, y) not in obstacles:
             best_distance = dist
             best_action = action
-    return best_action if best_action is not None else random.choice(env.action_space)
+    return best_action   # If all actions lead to obstacles, return None
 
 
 def simulate(env, rollout_depth: int = 50, epsilon=0.1) -> float:
@@ -128,7 +128,7 @@ def mcts(
     if not root.children:
         return random.choice(root_env.action_space)  # No children, choose random action
 
-    best_child = max(root.children, key=lambda n: n.visits)
+    best_child = max(root.children, key=lambda n: n.q_value)  # Choose child with highest average reward
     return best_child.action
 
 
