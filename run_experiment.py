@@ -44,8 +44,8 @@ def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
 
 if __name__ == "__main__":
     # Example usage
-    env = GridWorld(size=10, slip_prob=0.1, num_obstacles=5)
-    NUM_TRIALS = 100
+    env = GridWorld(size=10, slip_prob=0.0, num_obstacles=5)
+    NUM_TRIALS = 10
 
     print("\n============== Random Agent ==============")
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     print("\n============= MCTS Agent - Random ==============")
 
-    mcts_agent = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=50, epsilon=1.0)
+    mcts_agent = MCTSAgent(iterations=1000, exploration_param=1.4, rollout_depth=50, epsilon=1.0)
     mcts_scores, mcts_success, best_mcts_run = run_experiment(env, mcts_agent, num_trials=NUM_TRIALS)
 
     mcts_state_vec = best_mcts_run
@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     print("\n============== MCTS Agent - Epsilon-Greedy ==============")
 
-    mcts_agent_eps = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=50, epsilon=0.1)
+    mcts_agent_eps = MCTSAgent(iterations=1000, exploration_param=1.4, rollout_depth=50, epsilon=0.1)
     mcts_eps_scores, mcts_eps_success, best_mcts_eps_run = run_experiment(env, mcts_agent_eps, num_trials=NUM_TRIALS)
 
     mcts_eps_state_vec = best_mcts_eps_run
