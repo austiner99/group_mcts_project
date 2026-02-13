@@ -7,6 +7,7 @@ from agent import AbstractAgent
 from baselines import GreedyAgent, RandomAgent
 from env import GridWorld
 from mcts import MCTSAgent
+from mcts_random import MCTSRandomAgent
 from visualize import visualize_environment
 
 
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     random_scores, random_success = run_experiment(env, random_agent, num_trials=NUM_TRIALS)
 
     random_state_vec = env.state_history
-    visualize_environment(10, random_state_vec, figure_title="Random Agent")
+    # visualize_environment(10, random_state_vec, figure_title="Random Agent")
 
     print("\n============= Greedy Agent ==============")
 
@@ -61,29 +62,41 @@ if __name__ == "__main__":
     greedy_scores, greedy_success = run_experiment(env, greedy_agent, num_trials=NUM_TRIALS)
 
     greedy_state_vec = env.state_history
-    visualize_environment(10, greedy_state_vec, figure_title="Greedy Agent")
+    # visualize_environment(10, greedy_state_vec, figure_title="Greedy Agent")
 
-    print("\n============= MCTS Agent - Random ==============")
+    print("\n============= MCTS Agent - Random Revamped ==============")
 
-    mcts_agent = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=50, epsilon=1.0)
-    mcts_scores, mcts_success = run_experiment(env, mcts_agent, num_trials=NUM_TRIALS)
+    mcts_random_agent = MCTSRandomAgent(iterations=500, exploration_param=1.4, rollout_depth=25, epsilon=1.0)
+    mcts_random_scores, mcts_random_success = run_experiment(env, mcts_random_agent, num_trials=NUM_TRIALS)
 
     mcts_state_vec = env.state_history
     visualize_environment(10, mcts_state_vec, figure_title="MCTS Agent - Random")
 
-    print("\n============== MCTS Agent - Epsilon-Greedy ==============")
+    # print("\n============= MCTS Agent - Random ==============")
 
-    mcts_agent_eps = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=50, epsilon=0.1)
-    mcts_eps_scores, mcts_eps_success = run_experiment(env, mcts_agent, num_trials=NUM_TRIALS)
+    # mcts_agent = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=10, epsilon=1.0)
+    # mcts_scores, mcts_success = run_experiment(env, mcts_agent, num_trials=NUM_TRIALS)
 
-    mcts_eps_state_vec = env.state_history
-    visualize_environment(10, mcts_eps_state_vec, figure_title="MCTS Agent - Epsilon-Greedy")
+    # mcts_state_vec = env.state_history
+    # visualize_environment(10, mcts_state_vec, figure_title="MCTS Agent - Random")
+
+    # print("\n============== MCTS Agent - Epsilon-Greedy ==============")
+
+    # mcts_agent_eps = MCTSAgent(iterations=500, exploration_param=1.4, rollout_depth=10, epsilon=0.1)
+    # mcts_eps_scores, mcts_eps_success = run_experiment(env, mcts_agent_eps, num_trials=NUM_TRIALS)
+
+    # mcts_eps_state_vec = env.state_history
+    # visualize_environment(10, mcts_eps_state_vec, figure_title="MCTS Agent - Epsilon-Greedy")
 
     # Box and whisker plot for score distribution
     plt.figure(figsize=(8, 6))
+    # plt.boxplot(
+    #     [random_scores, greedy_scores, mcts_random_scores, mcts_scores, mcts_eps_scores],
+    #     labels=["Random Agent", "Greedy Agent", "MCTS - Random Revamped", "MCTS - Random", "MCTS - Epsilon-Greedy"],
+    # )
     plt.boxplot(
-        [random_scores, greedy_scores, mcts_scores, mcts_eps_scores],
-        labels=["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
+        [random_scores, greedy_scores, mcts_random_scores],
+        labels=["Random Agent", "Greedy Agent", "MCTS - Random Revamped"],
     )
     plt.title('Comparison of Agent Scores\n(Press "q" to exit)')
     plt.ylabel("Total Reward")
@@ -92,9 +105,13 @@ if __name__ == "__main__":
 
     # Bar plot for number of times goal reached
     plt.figure(figsize=(8, 8))
+    # plt.bar(
+    #     ["Random Agent", "Greedy Agent", "MCTS - Random Revamped", "MCTS - Random", "MCTS - Epsilon-Greedy"],
+    #     [random_success, greedy_success, mcts_random_success, mcts_success, mcts_eps_success],
+    # )
     plt.bar(
-        ["Random Agent", "Greedy Agent", "MCTS - Random", "MCTS - Epsilon-Greedy"],
-        [random_success, greedy_success, mcts_success, mcts_eps_success],
+        ["Random Agent", "Greedy Agent", "MCTS - Random Revamped"],
+        [random_success, greedy_success, mcts_random_success],
     )
     plt.title('Number of Times Goal Reached\n(Press "q" to exit)')
     plt.ylabel("Count")

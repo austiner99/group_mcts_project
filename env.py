@@ -4,7 +4,7 @@ import random
 
 global MOVEMENT_REWARD, OBSTACLE_PENALTY, GOAL_REWARD, RANDOM_OBSTACLE_MOVE_PROB  # variable sthat can be modified from config.py
 MOVEMENT_REWARD = -1  # Penalty for each movement to encourage shorter paths
-OBSTACLE_PENALTY = -50  # Penalty for hitting an obstacle
+OBSTACLE_PENALTY = -75  # Penalty for hitting an obstacle
 GOAL_REWARD = 100  # Reward for reaching the goal
 RANDOM_OBSTACLE_MOVE_PROB = 0.7  # Probability that an obstacle will move at each time step
 
@@ -14,7 +14,7 @@ class GridWorld:
         self.size = size
         self.slip_prob = slip_prob
         self.num_obstacles = num_obstacles
-        self.action_space = ["up", "down", "left", "right"]
+        self.action_space = ["u", "d", "l", "r"]
         self.state_history = []  # To keep track of states for visualization
         self.reset()
 
@@ -53,7 +53,7 @@ class GridWorld:
         reward = MOVEMENT_REWARD
 
         dist_from_goal = abs(self.agent_pos[0] - self.goal_pos[0]) + abs(self.agent_pos[1] - self.goal_pos[1])
-        reward = -dist_from_goal/(self.size * 2)  # Normalize distance penalty
+        reward += -dist_from_goal/(self.size * 2)  # Normalize distance penalty
         
         done = False
         if self.agent_pos in self.obstacles:
@@ -67,13 +67,13 @@ class GridWorld:
         return self.get_state(), reward, done
 
     def move_agent(self, action):
-        if action == "up" and self.agent_pos[1] > 0:
+        if action == "u" and self.agent_pos[1] > 0:
             self.agent_pos[1] -= 1
-        elif action == "down" and self.agent_pos[1] < self.size - 1:
+        elif action == "d" and self.agent_pos[1] < self.size - 1:
             self.agent_pos[1] += 1
-        elif action == "left" and self.agent_pos[0] > 0:
+        elif action == "l" and self.agent_pos[0] > 0:
             self.agent_pos[0] -= 1
-        elif action == "right" and self.agent_pos[0] < self.size - 1:
+        elif action == "r" and self.agent_pos[0] < self.size - 1:
             self.agent_pos[0] += 1
 
     def move_obstacles(self):
@@ -81,28 +81,28 @@ class GridWorld:
             if random.random() < RANDOM_OBSTACLE_MOVE_PROB:
                 direction = random.choice(self.action_space)
                 if (
-                    direction == "up"
+                    direction == "u"
                     and obs[1] > 0
                     and [obs[0], obs[1] - 1] != self.agent_pos
                     and [obs[0], obs[1] - 1] != self.goal_pos
                 ):
                     obs[1] -= 1
                 elif (
-                    direction == "down"
+                    direction == "d"
                     and obs[1] < self.size - 1
                     and [obs[0], obs[1] + 1] != self.agent_pos
                     and [obs[0], obs[1] + 1] != self.goal_pos
                 ):
                     obs[1] += 1
                 elif (
-                    direction == "left"
+                    direction == "l"
                     and obs[0] > 0
                     and [obs[0] - 1, obs[1]] != self.agent_pos
                     and [obs[0] - 1, obs[1]] != self.goal_pos
                 ):
                     obs[0] -= 1
                 elif (
-                    direction == "right"
+                    direction == "r"
                     and obs[0] < self.size - 1
                     and [obs[0] + 1, obs[1]] != self.agent_pos
                     and [obs[0] + 1, obs[1]] != self.goal_pos

@@ -9,15 +9,16 @@ from agent import AbstractAgent
 class Node:
     """A node in the Monte Carlo Tree Search."""
 
-    def __init__(self, env, parent=None, action=None):
+    def __init__(self, env=None, policy=None, parent=None, action=None):
         """Initialize the node with state and parent."""
-        self.env = env
         self.parent = parent
         self.action = action
         self.children = []
         self.visits = 0
         self.total_reward = 0.0
+        self.policy = ''
         self.untried_actions = list(env.action_space)
+        
 
     @property
     def q_value(self) -> float:
@@ -48,12 +49,11 @@ def select(node: Node) -> Node:
     return node
 
 
-def expand(node: Node) -> Node:
+def expand(node: Node, env) -> Node:
     """Expansion: Add a new child node for an untried action."""
     action = node.untried_actions.pop()
-    next_env = node.env.clone() # Another issue might be here. This is saving the stochasticity of the environment which block it from exploring different states
-    next_env.step(action)
-    child_node = Node(env=next_env, parent=node, action=action)
+    pi = node.parent.policy + action if node.parent else action
+    child_node = Node( env=env, policy=pi, parent=node, action=action)
     node.children.append(child_node)
     return child_node
 
@@ -84,10 +84,16 @@ def rollout_policy(env, epsilon=0.1):
             best_action = action
     return best_action if best_action is not None else random.choice(env.action_space)
 
-def simulate(env, rollout_depth: int = 50, epsilon=0.1) -> float:
+def simulate(env, first_action, rollout_depth: int = 50, epsilon=0.1) -> float:
     """Roll out with default policy."""
     total_reward = 0.0
     depth = 0
+
+    action = rollout_policy(env, epsilon=epsilon)
+    _, reward, done = env.step(first_action)
+    total_reward += reward
+    depth += 1
+
     while not is_terminal_env(env) and depth < rollout_depth:
         action = rollout_policy(env, epsilon=epsilon)
         _, reward, done = env.step(action)
@@ -115,12 +121,19 @@ def mcts(
 ):
     """Perform Monte Carlo Tree Search and return the best action."""
     root = Node(root_env.clone())
+    actions = []
+    for _ in root_env.action_space:
+        actions.append(expand(root, root_env))
+    
     for _ in range(iterations):
-        node = select(root)
-        if not is_terminal_env(node.env) and node.untried_actions:
-            node = expand(node)
-        reward = simulate(node.env.clone(), rollout_depth=rollout_depth, epsilon=epsilon)
+        node = random.choice(actions)  # Randomly select one of the expanded nodes   
+        first_action = node.action    
+
+        reward = simulate(root_env.clone(), first_action, rollout_depth=rollout_depth, epsilon=epsilon)
         backpropogate(node, reward)
+
+    # for action in actions:
+    #     print(f"Action: {action.action}, Visits: {action.visits}, Total Reward: {action.total_reward}, Q-value: {action.q_value}")  
 
     if not root.children:
         return random.choice(root_env.action_space)  # No children, choose random action
@@ -129,7 +142,7 @@ def mcts(
     return best_child.action
 
 
-class MCTSAgent(AbstractAgent):
+class MCTSRandomAgent(AbstractAgent):
     """Monte Carlo Tree Search agent."""
 
     def __init__(
