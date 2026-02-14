@@ -59,50 +59,33 @@ def expand(node: Node, env) -> Node:
     return child_node
 
 
-def rollout_policy(env, epsilon=0.1):
-    """Epsilon-greedy rollout policy."""
-    if epsilon >= 1.0 or random.random() < epsilon:
-        return random.choice(env.action_space)  # Explore
-    # Exploit: Choose action that moves towards the goal
-    agent_pos, goal_pos, obstacles = env.get_state()
-    best_action = None
-    best_distance = float("inf")
-    for action in env.action_space:
-        x, y = agent_pos
-        if action == "u":
-            y -= 1
-        elif action == "d":
-            y += 1
-        elif action == "l":
-            x -= 1
-        elif action == "r":
-            x += 1
-        else:
-            continue
-        dist = abs(x - goal_pos[0]) + abs(y - goal_pos[1])
-        if dist < best_distance and (x, y) not in obstacles:
-            best_distance = dist
-            best_action = action
-    return best_action if best_action is not None else random.choice(env.action_space)
+def rollout_policy(env, node):
+    """Rollout according to UCT values."""
+    if node.untried_actions:
+        child_node = expand(node, env)
+        return child_node.action, child_node
+    
+    child_node = max(node.children, key=lambda n: uct_value(node, n))
 
-def simulate(env, first_action, rollout_depth: int = 50, epsilon=0.1) -> float:
+    return child_node.action, child_node
+
+def simulate(env:GridWorld, node:Node, rollout_depth: int = 50, epsilon=0.1) -> float:
     """Roll out with default policy."""
     total_reward = 0.0
     depth = 0
 
-    action = rollout_policy(env, epsilon=epsilon)
-    _, reward, done = env.step(first_action)
+    _, reward, done = env.step(node.action)
     total_reward += reward
     depth += 1
 
     while not is_terminal_env(env) and depth < rollout_depth:
-        action = rollout_policy(env, epsilon=epsilon)
+        action, node = rollout_policy(env, node)
         _, reward, done = env.step(action)
         total_reward += reward
         if done:
             break
         depth += 1
-    return total_reward
+    return total_reward, node
 
 def backpropogate(node: Node, reward: float) -> None:
     """Backpropagate the reward up the tree."""
@@ -126,10 +109,9 @@ def mcts(
     
     for _ in range(iterations):
         node = random.choice(actions)  # Randomly select one of the expanded nodes   
-        first_action = node.action    
 
-        reward = simulate(root_env.clone(), first_action, rollout_depth=rollout_depth, epsilon=epsilon)
-        backpropogate(node, reward)
+        reward, final_node = simulate(root_env.clone(), node, rollout_depth=rollout_depth, epsilon=epsilon)
+        backpropogate(final_node, reward)
 
     # for action in actions:
     #     print(f"Action: {action.action}, Visits: {action.visits}, Total Reward: {action.total_reward}, Q-value: {action.q_value}")  
@@ -141,7 +123,7 @@ def mcts(
     return best_child.action
 
 
-class MCTSRandomAgent(AbstractAgent):
+class MCTSUctAgent(AbstractAgent):
     """Monte Carlo Tree Search agent."""
 
     def __init__(

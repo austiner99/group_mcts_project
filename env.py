@@ -52,9 +52,6 @@ class GridWorld:
 
         reward = MOVEMENT_REWARD
 
-        dist_from_goal = abs(self.agent_pos[0] - self.goal_pos[0]) + abs(self.agent_pos[1] - self.goal_pos[1])
-        reward += -dist_from_goal/(self.size * 2)  # Normalize distance penalty
-        
         done = False
         if self.agent_pos in self.obstacles:
             reward = OBSTACLE_PENALTY
