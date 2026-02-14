@@ -16,8 +16,8 @@ environment:
 
 rewards:
   step: -1
-  obstacle: -25
-  goal: 50
+  obstacle: -50
+  goal: 100
   terminate_on_obstacle: true
   terminate_on_goal: true
 

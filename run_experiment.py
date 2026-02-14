@@ -14,7 +14,7 @@ from visualize import visualize_environment
 def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
     scores = []
     num_time_goal_reached = 0
-
+    best_score = float("-inf")
     for trial in range(num_trials):
         world.reset()
         done = False
@@ -27,7 +27,9 @@ def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
             total_reward += reward
 
         scores.append(total_reward)
-
+        if total_reward > best_score:
+            best_score = total_reward
+            best_run = world.state_history.copy()
         agent_pos, goal_pos, _ = world.get_state()
         reached_goal = agent_pos == goal_pos
         if reached_goal:
@@ -39,44 +41,44 @@ def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
     print(f"\nAverage Score over {num_trials} trials: {avg_score}")
     print(f"Number of times goal reached: {num_time_goal_reached} out of {num_trials}")
 
-    return scores, num_time_goal_reached
+    return scores, num_time_goal_reached, best_run
 
 
 if __name__ == "__main__":
     # Example usage
-    env = GridWorld(size=10, slip_prob=0.1, num_obsqqtacles=5)
+    env = GridWorld(size=10, slip_prob=0.1, num_obstacles=5)
     NUM_TRIALS = 50
 
     print("\n============== Random Agent ==============")
 
     random_agent = RandomAgent()
-    random_scores, random_success = run_experiment(env, random_agent, num_trials=NUM_TRIALS)
-
-    random_state_vec = env.state_history
+    random_scores, random_success, best_random_run = run_experiment(env, random_agent, num_trials=NUM_TRIALS)
+    
+    random_state_vec = best_random_run
     visualize_environment(10, random_state_vec, figure_title="Random Agent")
 
     print("\n============= Greedy Agent ==============")
 
     greedy_agent = GreedyAgent()
-    greedy_scores, greedy_success = run_experiment(env, greedy_agent, num_trials=NUM_TRIALS)
+    greedy_scores, greedy_success, best_greedy_run = run_experiment(env, greedy_agent, num_trials=NUM_TRIALS)
 
-    greedy_state_vec = env.state_history
+    greedy_state_vec = best_greedy_run
     visualize_environment(10, greedy_state_vec, figure_title="Greedy Agent")
 
     print("\n============= MCTS Agent - Random ==============")
 
     mcts_random_agent = MCTSRandomAgent(iterations=200, exploration_param=1.4, rollout_depth=25, epsilon=1.0)
-    mcts_random_scores, mcts_random_success = run_experiment(env, mcts_random_agent, num_trials=NUM_TRIALS)
+    mcts_random_scores, mcts_random_success, best_mcts_run = run_experiment(env, mcts_random_agent, num_trials=NUM_TRIALS)
 
-    mcts_state_vec = env.state_history
+    mcts_state_vec = best_mcts_run
     visualize_environment(10, mcts_state_vec, figure_title="MCTS Agent - Random")
 
     print("\n============= MCTS Agent - UCT ==============")
 
     mcts_uct_agent = MCTSUctAgent(iterations=200, exploration_param=1.4, rollout_depth=25, epsilon=0.1)
-    mcts_uct_scores, mcts_uct_success = run_experiment(env, mcts_uct_agent, num_trials=NUM_TRIALS)
+    mcts_uct_scores, mcts_uct_success, best_mcts_uct_run = run_experiment(env, mcts_uct_agent, num_trials=NUM_TRIALS)
 
-    mcts_uct_state_vec = env.state_history
+    mcts_uct_state_vec = best_mcts_uct_run
     visualize_environment(10, mcts_uct_state_vec, figure_title="MCTS Agent - UCT")
 
 

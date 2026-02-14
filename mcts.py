@@ -22,7 +22,7 @@ class Node:
     @property
     def q_value(self) -> float:
         """Average reward of the node."""
-        return self.total_reward / self.visits if self.visits > 0 else -float("inf")
+        return self.total_reward / self.visits if self.visits > 0 else float("-inf")
 
 
 def is_terminal_env(env):
@@ -33,17 +33,19 @@ def is_terminal_env(env):
 
 def uct_value(parent: Node, child: Node, exploration_param: float = math.sqrt(2)) -> float:
     """Calculate the UCT value for a node."""
+    if child.visits == 0:
+        return float("inf")  # Prioritize unvisited nodes
     return child.q_value + exploration_param * math.sqrt(
         math.log(parent.visits) / (child.visits)
     )  # Q + C * sqrt(ln(N) / n)
 
 
-def select(node: Node) -> Node:
+def select(node: Node, exploration_param: float = math.sqrt(2)) -> Node:
     """Select the child node with the highest UCT value."""
     while not is_terminal_env(node.env):
         if node.untried_actions:
             return node
-        node = max(node.children, key=lambda n: uct_value(node, n))
+        node = max(node.children, key=lambda n: uct_value(node, n, exploration_param=exploration_param))
 
     return node
 
@@ -82,7 +84,7 @@ def rollout_policy(env, epsilon=0.1):
         if dist < best_distance and (x, y) not in obstacles:
             best_distance = dist
             best_action = action
-    return best_action if best_action is not None else random.choice(env.action_space)
+    return best_action   # If all actions lead to obstacles, return None
 
 def simulate(env, rollout_depth: int = 50, epsilon=0.1) -> float:
     """Roll out with default policy."""
@@ -116,7 +118,7 @@ def mcts(
     """Perform Monte Carlo Tree Search and return the best action."""
     root = Node(root_env.clone())
     for _ in range(iterations):
-        node = select(root)
+        node = select(root, exploration_param=exploration_param)
         if not is_terminal_env(node.env) and node.untried_actions:
             node = expand(node)
         reward = simulate(node.env.clone(), rollout_depth=rollout_depth, epsilon=epsilon)

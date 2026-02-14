@@ -7,6 +7,7 @@ MOVEMENT_REWARD = -1  # Penalty for each movement to encourage shorter paths
 OBSTACLE_PENALTY = -75  # Penalty for hitting an obstacle
 GOAL_REWARD = 100  # Reward for reaching the goal
 RANDOM_OBSTACLE_MOVE_PROB = 0.7  # Probability that an obstacle will move at each time step
+RANDOM_GOAL_MOVE_PROB = 0.0  # Probability that the goal will move at each time step (if enabled)
 
 
 class GridWorld:
@@ -39,6 +40,19 @@ class GridWorld:
     def save_state_to_history(self):
         self.state_history.append(self.get_state())
 
+    def move_goal(self):
+        if random.random() < RANDOM_GOAL_MOVE_PROB:
+            direction = random.choice(self.action_space)
+            x, y = self.goal_pos
+            if direction == "up" and y > 0 and [x, y - 1] != self.agent_pos and [x, y - 1] not in self.obstacles:
+                self.goal_pos[1] -= 1
+            elif direction == "down" and y < self.size - 1 and [x, y + 1] != self.agent_pos and [x, y + 1] not in self.obstacles:
+                self.goal_pos[1] += 1
+            elif direction == "left" and x > 0 and [x - 1, y] != self.agent_pos and [x - 1, y] not in self.obstacles:
+                self.goal_pos[0] -= 1
+            elif direction == "right" and x < self.size - 1 and [x + 1, y] != self.agent_pos and [x + 1, y] not in self.obstacles:
+                self.goal_pos[0] += 1
+    
     def step(self, action):
         # agent_position, goal_position, obstacles = self.get_state()
         # self.agent_pos = list(agent_position)
@@ -49,6 +63,7 @@ class GridWorld:
 
         self.move_agent(action)
         self.move_obstacles()
+        self.move_goal()
 
         reward = MOVEMENT_REWARD
 
@@ -72,6 +87,8 @@ class GridWorld:
             self.agent_pos[0] -= 1
         elif action == "r" and self.agent_pos[0] < self.size - 1:
             self.agent_pos[0] += 1
+        else:
+            pass  # Invalid move, agent stays in place
 
     def move_obstacles(self):
         for obs in self.obstacles:
