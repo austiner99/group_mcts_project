@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     print("\n============= MCTS Agent - Random ==============")
 
-    mcts_random_agent = MCTSRandomAgent(iterations=200, exploration_param=1.4, rollout_depth=25, epsilon=1.0)
+    mcts_random_agent = MCTSRandomAgent(iterations=200, rollout_depth=25)
     mcts_random_scores, mcts_random_success, best_mcts_run = run_experiment(env, mcts_random_agent, num_trials=NUM_TRIALS)
 
     mcts_state_vec = best_mcts_run
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     print("\n============= MCTS Agent - UCT ==============")
 
-    mcts_uct_agent = MCTSUctAgent(iterations=200, exploration_param=1.4, rollout_depth=25, epsilon=0.1)
+    mcts_uct_agent = MCTSUctAgent(iterations=200, exploration_param=1.4, rollout_depth=25)
     mcts_uct_scores, mcts_uct_success, best_mcts_uct_run = run_experiment(env, mcts_uct_agent, num_trials=NUM_TRIALS)
 
     mcts_uct_state_vec = best_mcts_uct_run

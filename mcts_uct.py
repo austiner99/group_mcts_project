@@ -59,17 +59,17 @@ def expand(node: Node, env) -> Node:
     return child_node
 
 
-def rollout_policy(env, node):
+def rollout_policy(env, node, exploration_param: float = math.sqrt(2)):
     """Rollout according to UCT values."""
     if node.untried_actions:
         child_node = expand(node, env)
         return child_node.action, child_node
     
-    child_node = max(node.children, key=lambda n: uct_value(node, n))
+    child_node = max(node.children, key=lambda n: uct_value(node, n, exploration_param=exploration_param))
 
     return child_node.action, child_node
 
-def simulate(env:GridWorld, node:Node, rollout_depth: int = 50, epsilon=0.1) -> float:
+def simulate(env:GridWorld, node:Node, rollout_depth: int = 50, exploration_param: float = math.sqrt(2)) -> float:
     """Roll out with default policy."""
     total_reward = 0.0
     depth = 0
@@ -79,7 +79,7 @@ def simulate(env:GridWorld, node:Node, rollout_depth: int = 50, epsilon=0.1) -> 
     depth += 1
 
     while not is_terminal_env(env) and depth < rollout_depth:
-        action, node = rollout_policy(env, node)
+        action, node = rollout_policy(env, node, exploration_param=exploration_param)
         _, reward, done = env.step(action)
         total_reward += reward
         if done:
@@ -99,7 +99,6 @@ def mcts(
     iterations: int = 500,
     exploration_param: float = math.sqrt(2),
     rollout_depth: int = 50,
-    epsilon: float = 0.1,
 ):
     """Perform Monte Carlo Tree Search and return the best action."""
     root = Node(root_env.clone())
@@ -110,11 +109,8 @@ def mcts(
     for _ in range(iterations):
         node = random.choice(actions)  # Randomly select one of the expanded nodes   
 
-        reward, final_node = simulate(root_env.clone(), node, rollout_depth=rollout_depth, epsilon=epsilon)
+        reward, final_node = simulate(root_env.clone(), node, rollout_depth=rollout_depth, exploration_param=exploration_param)
         backpropogate(final_node, reward)
-
-    # for action in actions:
-    #     print(f"Action: {action.action}, Visits: {action.visits}, Total Reward: {action.total_reward}, Q-value: {action.q_value}")  
 
     if not root.children:
         return random.choice(root_env.action_space)  # No children, choose random action
@@ -127,13 +123,12 @@ class MCTSUctAgent(AbstractAgent):
     """Monte Carlo Tree Search agent."""
 
     def __init__(
-        self, iterations: int = 500, exploration_param: float = 1.4, rollout_depth: int = 10, epsilon: float = 0.1
+        self, iterations: int = 500, exploration_param: float = 1.4, rollout_depth: int = 10
     ):
         """Initialize the MCTS agent with parameters."""
         self.iterations = iterations
         self.exploration_param = exploration_param
         self.rollout_depth = rollout_depth
-        self.epsilon = epsilon
 
     def select_action(self, env):
         """Select an action using Monte Carlo Tree Search."""
@@ -142,5 +137,4 @@ class MCTSUctAgent(AbstractAgent):
             iterations=self.iterations,
             exploration_param=self.exploration_param,
             rollout_depth=self.rollout_depth,
-            epsilon=self.epsilon,
         )

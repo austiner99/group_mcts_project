@@ -11,25 +11,28 @@ The algorithm can be evaluated against random and greedy algorithms (not totally
 
 ### Table of Contents
 1. [env.py](env.py)
-2. [mcts.py](mcts.py)
-3. [baselines.py](baselines.py)
-4. [run_experiment.py](run_experiment.py)
-5. [visualize.py](visualize.py)
-6. [config.py](config.py)
+2. [mcts_random.py](mcts_random.py)
+3. [mcts_uct.py](mcts_uct.py)
+4. [baselines.py](baselines.py)
+5. [run_experiment.py](run_experiment.py)
+6. [visualize.py](visualize.py)
+7. [config.py](config.py)
 
 ### Description of files
 
 1. env.py - implementation of the grid world, including obstacles and goal and stochastic movement and dynamics pulled from config.py
 
-2. mcts.py - main Monte Carlo code and sim. This chooses actions and updates statistics to be plugged into the enviornment base on "current" states
+2. mcts_random.py - Monte Carlo code and sim for the random search. This chooses actions and updates statistics to be plugged into the enviornment base on "current" states. The random MCTS chooses random paths to search the space.
 
-3. baselines.py - code for random and greedy policies for comparison with mcts algorithm
+3. mcts_uct.py - Monte Carlo code and sim for the the UCT search. This chooses actions and updates statistics to be plugged into the enviornment base on "current" states. The UCT MCTS uses the upper confidence bound to pick which paths to search. 
 
-4. run_experiment.py - uses all code to run the experiment 
+4. baselines.py - code for random and greedy policies for comparison with mcts algorithm
 
-5. visualize.py - displays current state of experiment while running. Can also generate figures for project presentation
+5. run_experiment.py - uses all code to run the experiment 
 
-6. config.py - functions to dictate how enviornment/agent reacts to movement/how things move around. Kind of the "miscellaneous" file
+6. visualize.py - displays current state of experiment while running. Can also generate figures for project presentation
+
+7. config.py - functions to dictate how enviornment/agent reacts to movement/how things move around. Kind of the "miscellaneous" file
 
 ### Instructions
 
@@ -37,7 +40,7 @@ The algorithm can be evaluated against random and greedy algorithms (not totally
 
 2. Run [run_experiment.py](run_experiment.py).
 
-3. A visualization of a trial with each agent will pop up. The blue square is the agent, red are obstacles, and green is the goal. You can exit by pressing 'q'.
+3. A visualization of a trial with each agent will pop up. The blue square is the agent, red are obstacles, and green is the goal. You can exit by pressing 'q'. Note: The MCTS agents will take a few minutes to run.
 
 4. After the visualizations have been completed, a box and wisker plot will show the distribution of scores for each agent. 
 
