@@ -41,16 +41,16 @@ class GridWorld:
         self.state_history.append(self.get_state())
 
     def move_goal(self):
-        if random.random() < RANDOM_GOAL_MOVE_PROB:
+        if random.random() <= RANDOM_GOAL_MOVE_PROB:
             direction = random.choice(self.action_space)
             x, y = self.goal_pos
-            if direction == "up" and y > 0 and [x, y - 1] != self.agent_pos and [x, y - 1] not in self.obstacles:
+            if direction == "u" and y > 0 and [x, y - 1] != self.agent_pos and [x, y - 1] not in self.obstacles:
                 self.goal_pos[1] -= 1
-            elif direction == "down" and y < self.size - 1 and [x, y + 1] != self.agent_pos and [x, y + 1] not in self.obstacles:
+            elif direction == "d" and y < self.size - 1 and [x, y + 1] != self.agent_pos and [x, y + 1] not in self.obstacles:
                 self.goal_pos[1] += 1
-            elif direction == "left" and x > 0 and [x - 1, y] != self.agent_pos and [x - 1, y] not in self.obstacles:
+            elif direction == "l" and x > 0 and [x - 1, y] != self.agent_pos and [x - 1, y] not in self.obstacles:
                 self.goal_pos[0] -= 1
-            elif direction == "right" and x < self.size - 1 and [x + 1, y] != self.agent_pos and [x + 1, y] not in self.obstacles:
+            elif direction == "r" and x < self.size - 1 and [x + 1, y] != self.agent_pos and [x + 1, y] not in self.obstacles:
                 self.goal_pos[0] += 1
     
     def step(self, action):
