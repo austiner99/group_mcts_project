@@ -7,7 +7,7 @@ The idea behind this project is to create a grid world with an agent navigating 
 
 The agent receives scores and penalties for its behaviors. Each movement incurs a -1 penalty, encouraging shorter paths. Reaching the goal gives the agent a 100 point reward, and hitting an obstacle results in a -75 point penalty. Hitting a goal or obstacle ends the trial.
 
-The MCTS-controlled agent will navigate the world using a MCTS simulation to select a movement (up, down, left or right) at each timestep using an upper confidence bound (UCB) strategy. This method was selected as it seemed the best way to deal with a large amount of stochasticity, and offered many parameters to adjust in order to optimize performance.
+The MCTS-controlled agent will navigate the world using a MCTS simulation to select a movement (up, down, left or right) at each timestep using an upper confidence bound for trees (UCT) strategy. This method was selected as it seemed the best way to deal with a large amount of stochasticity, and offered many parameters to adjust in order to optimize performance.
 
 Baseline agents will also navigate the world using both a random movement algorithm and a greedy movement algorithm. The random algorithm selects a location at random, whereas the greedy algorithm always attempts to move in the shortest direction to the goal. These agent's performance will be compared to the MCTS agent in order to evaluate the usefulness of a MCTS algorithm in this problem.
 
