@@ -1,0 +1,21 @@
+grid_size: 10
+slip_prob: 0.1
+num_obstacles: 10
+obstacle_move_prob: 0.7
+goal_move_prob: 0.0
+
+# Rewards
+movement_reward: -1
+obstacle_penalty: -75
+goal_reward: 100
+
+# Agent settings
+agents: ["random", "greedy", "mcts_random", "mcts_uct"]
+mcts_iterations: 200
+mcts_rollout_depth: 25
+mcts_ucb_c: 1.4
+
+# Experiment settings
+num_trials: 50
+visualize: true
+output_dir: "results"
