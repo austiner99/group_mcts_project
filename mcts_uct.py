@@ -4,13 +4,14 @@ import math
 import random
 
 from agent import AbstractAgent
+from config import Config
 from env import GridWorld
 
 
 class Node:
     """A node in the Monte Carlo Tree Search."""
 
-    def __init__(self, env, policy='', parent=None, action=None):
+    def __init__(self, env, policy="", parent=None, action=None):
         """Initialize the node with state and parent."""
         self.parent = parent
         self.action = action
@@ -19,7 +20,6 @@ class Node:
         self.total_reward = 0.0
         self.policy = policy
         self.untried_actions = list(env.action_space)
-        
 
     @property
     def q_value(self) -> float:
@@ -54,7 +54,7 @@ def expand(node: Node, env) -> Node:
     """Expansion: Add a new child node for an untried action."""
     action = node.untried_actions.pop()
     pi = node.parent.policy + action if node.parent else action
-    child_node = Node( env=env, policy=pi, parent=node, action=action)
+    child_node = Node(env=env, policy=pi, parent=node, action=action)
     node.children.append(child_node)
     return child_node
 
@@ -64,12 +64,13 @@ def rollout_policy(env, node, exploration_param: float = math.sqrt(2)):
     if node.untried_actions:
         child_node = expand(node, env)
         return child_node.action, child_node
-    
+
     child_node = max(node.children, key=lambda n: uct_value(node, n, exploration_param=exploration_param))
 
     return child_node.action, child_node
 
-def simulate(env:GridWorld, node:Node, rollout_depth: int = 50, exploration_param: float = math.sqrt(2)) -> float:
+
+def simulate(env: GridWorld, node: Node, rollout_depth: int = 50, exploration_param: float = math.sqrt(2)) -> float:
     """Roll out with default policy."""
     total_reward = 0.0
     depth = 0
@@ -87,12 +88,14 @@ def simulate(env:GridWorld, node:Node, rollout_depth: int = 50, exploration_para
         depth += 1
     return total_reward, node
 
+
 def backpropogate(node: Node, reward: float) -> None:
     """Backpropagate the reward up the tree."""
     while node is not None:
         node.visits += 1
         node.total_reward += reward
         node = node.parent
+
 
 def mcts(
     root_env,
@@ -105,11 +108,13 @@ def mcts(
     actions = []
     for _ in root_env.action_space:
         actions.append(expand(root, root_env))
-    
-    for _ in range(iterations):
-        node = random.choice(actions)  # Randomly select one of the expanded nodes   
 
-        reward, final_node = simulate(root_env.clone(), node, rollout_depth=rollout_depth, exploration_param=exploration_param)
+    for _ in range(iterations):
+        node = random.choice(actions)  # Randomly select one of the expanded nodes
+
+        reward, final_node = simulate(
+            root_env.clone(), node, rollout_depth=rollout_depth, exploration_param=exploration_param
+        )
         backpropogate(final_node, reward)
 
     if not root.children:
@@ -123,12 +128,13 @@ class MCTSUctAgent(AbstractAgent):
     """Monte Carlo Tree Search agent."""
 
     def __init__(
-        self, iterations: int = 500, exploration_param: float = 1.4, rollout_depth: int = 10
+        self,
+        config: Config,
     ):
         """Initialize the MCTS agent with parameters."""
-        self.iterations = iterations
-        self.exploration_param = exploration_param
-        self.rollout_depth = rollout_depth
+        self.iterations = config.mcts_iterations
+        self.exploration_param = config.mcts_ucb_c
+        self.rollout_depth = config.mcts_rollout_depth
 
     def select_action(self, env):
         """Select an action using Monte Carlo Tree Search."""

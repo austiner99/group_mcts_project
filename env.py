@@ -1,20 +1,21 @@
-# Implementation of the grid world, including obstacles and goal and stochastic movement and dynamics pulled from config.py
+# size=10, slip_prob=0.1, num_obstacles=5 Implementation of the grid world, including obstacles and goal and stochastic movement and dynamics pulled from config.py
 
 import random
 
-global MOVEMENT_REWARD, OBSTACLE_PENALTY, GOAL_REWARD, RANDOM_OBSTACLE_MOVE_PROB  # variable sthat can be modified from config.py
-MOVEMENT_REWARD = -1  # Penalty for each movement to encourage shorter paths
-OBSTACLE_PENALTY = -75  # Penalty for hitting an obstacle
-GOAL_REWARD = 100  # Reward for reaching the goal
-RANDOM_OBSTACLE_MOVE_PROB = 0.7  # Probability that an obstacle will move at each time step
-RANDOM_GOAL_MOVE_PROB = 0.0  # Probability that the goal will move at each time step (if enabled)
+from config import Config
 
 
 class GridWorld:
-    def __init__(self, size=10, slip_prob=0.1, num_obstacles=0):
-        self.size = size
-        self.slip_prob = slip_prob
-        self.num_obstacles = num_obstacles
+    def __init__(self, config: Config):
+        self.size = config.grid_size
+        self.slip_prob = config.slip_prob
+        self.num_obstacles = config.num_obstacles
+        self.movement_reward = config.movement_reward
+        self.obstacle_penalty = config.obstacle_penalty
+        self.goal_reward = config.goal_reward
+        self.obstacle_move_prob = config.obstacle_move_prob
+        self.goal_move_prob = config.goal_move_prob
+        self.config = config
         self.action_space = ["u", "d", "l", "r"]
         self.state_history = []  # To keep track of states for visualization
         self.reset()
@@ -41,7 +42,7 @@ class GridWorld:
         self.state_history.append(self.get_state())
 
     def move_goal(self):
-        if random.random() <= RANDOM_GOAL_MOVE_PROB:
+        if random.random() < self.goal_move_prob:
             direction = random.choice(self.action_space)
             x, y = self.goal_pos
             if direction == "u" and y > 0 and [x, y - 1] != self.agent_pos and [x, y - 1] not in self.obstacles:
@@ -52,7 +53,7 @@ class GridWorld:
                 self.goal_pos[0] -= 1
             elif direction == "r" and x < self.size - 1 and [x + 1, y] != self.agent_pos and [x + 1, y] not in self.obstacles:
                 self.goal_pos[0] += 1
-    
+
     def step(self, action):
         # agent_position, goal_position, obstacles = self.get_state()
         # self.agent_pos = list(agent_position)
@@ -65,14 +66,14 @@ class GridWorld:
         self.move_obstacles()
         self.move_goal()
 
-        reward = MOVEMENT_REWARD
+        reward = self.movement_reward
 
         done = False
         if self.agent_pos in self.obstacles:
-            reward = OBSTACLE_PENALTY
+            reward = self.obstacle_penalty
             done = True
         elif self.agent_pos == self.goal_pos:
-            reward = GOAL_REWARD
+            reward = self.goal_reward
             done = True
 
         self.save_state_to_history()
@@ -92,7 +93,7 @@ class GridWorld:
 
     def move_obstacles(self):
         for obs in self.obstacles:
-            if random.random() < RANDOM_OBSTACLE_MOVE_PROB:
+            if random.random() < self.obstacle_move_prob:
                 direction = random.choice(self.action_space)
                 if (
                     direction == "u"
@@ -125,7 +126,7 @@ class GridWorld:
 
     def clone(self):
         """Create a deep copy of the environment for simulation purposes."""
-        clone_env = GridWorld(size=self.size, slip_prob=self.slip_prob, num_obstacles=self.num_obstacles)
+        clone_env = GridWorld(config=self.config)
         clone_env.agent_pos = self.agent_pos.copy()
         clone_env.goal_pos = self.goal_pos.copy()
         clone_env.obstacles = [list(obs) for obs in self.obstacles]

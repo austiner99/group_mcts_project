@@ -1,14 +1,17 @@
 # Uses all code to run the experiment.
 
+from argparse import ArgumentParser
+
 import matplotlib.pyplot as plt
-import time
 
 from agent import AbstractAgent
 from baselines import GreedyAgent, RandomAgent
+from config import load_config
 from env import GridWorld
 from mcts_random import MCTSRandomAgent
 from mcts_uct import MCTSUctAgent
 from visualize import visualize_environment
+
 
 def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
     scores = []
@@ -44,15 +47,25 @@ def run_experiment(world: GridWorld, agent: AbstractAgent, num_trials: int):
 
 
 if __name__ == "__main__":
+    parser = ArgumentParser(description="Run GridWorld experiment with different agents.")
+    parser.add_argument(
+        "--config", type=str, default="configs/default.yaml", help="Path to the configuration YAML file."
+    )
+    args = parser.parse_args()
+
+    if args.config:
+        config = load_config(args.config)
+        print(f"Loaded configuration from {args.config}")
+
     # Example usage
-    env = GridWorld(size=10, slip_prob=0.1, num_obstacles=5)
-    NUM_TRIALS = 50
+    env = GridWorld(config=config)
+    NUM_TRIALS = config.num_trials
 
     print("\n============== Random Agent ==============")
 
     random_agent = RandomAgent()
     random_scores, random_success, best_random_run = run_experiment(env, random_agent, num_trials=NUM_TRIALS)
-    
+
     random_state_vec = best_random_run
     visualize_environment(10, random_state_vec, figure_title="Random Agent")
 
@@ -66,20 +79,21 @@ if __name__ == "__main__":
 
     print("\n============= MCTS Agent - Random ==============")
 
-    mcts_random_agent = MCTSRandomAgent(iterations=200, rollout_depth=25)
-    mcts_random_scores, mcts_random_success, best_mcts_run = run_experiment(env, mcts_random_agent, num_trials=NUM_TRIALS)
+    mcts_random_agent = MCTSRandomAgent(config=config)
+    mcts_random_scores, mcts_random_success, best_mcts_run = run_experiment(
+        env, mcts_random_agent, num_trials=NUM_TRIALS
+    )
 
     mcts_state_vec = best_mcts_run
     visualize_environment(10, mcts_state_vec, figure_title="MCTS Agent - Random")
 
     print("\n============= MCTS Agent - UCT ==============")
 
-    mcts_uct_agent = MCTSUctAgent(iterations=200, exploration_param=1.4, rollout_depth=25)
+    mcts_uct_agent = MCTSUctAgent(config=config)
     mcts_uct_scores, mcts_uct_success, best_mcts_uct_run = run_experiment(env, mcts_uct_agent, num_trials=NUM_TRIALS)
 
     mcts_uct_state_vec = best_mcts_uct_run
     visualize_environment(10, mcts_uct_state_vec, figure_title="MCTS Agent - UCT")
-
 
     # Box and whisker plot for score distribution
     plt.figure(figsize=(8, 6))

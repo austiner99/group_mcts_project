@@ -4,13 +4,13 @@ import math
 import random
 
 from agent import AbstractAgent
-from env import GridWorld
+from config import Config
 
 
 class Node:
     """A node in the Monte Carlo Tree Search."""
 
-    def __init__(self, env, policy='', parent=None, action=None):
+    def __init__(self, env, policy="", parent=None, action=None):
         """Initialize the node with state and parent."""
         self.parent = parent
         self.action = action
@@ -19,7 +19,6 @@ class Node:
         self.total_reward = 0.0
         self.policy = policy
         self.untried_actions = list(env.action_space)
-        
 
     @property
     def q_value(self) -> float:
@@ -54,15 +53,16 @@ def expand(node: Node, env) -> Node:
     """Expansion: Add a new child node for an untried action."""
     action = node.untried_actions.pop()
     pi = node.parent.policy + action if node.parent else action
-    child_node = Node( env=env, policy=pi, parent=node, action=action)
+    child_node = Node(env=env, policy=pi, parent=node, action=action)
     node.children.append(child_node)
     return child_node
 
 
 def rollout_policy(env):
     """Random rollout policy."""
-    return random.choice(env.action_space)  
-    
+    return random.choice(env.action_space)
+
+
 def simulate(env, first_action, rollout_depth: int = 50) -> float:
     """Roll out with default policy."""
     total_reward = 0.0
@@ -82,12 +82,14 @@ def simulate(env, first_action, rollout_depth: int = 50) -> float:
         depth += 1
     return total_reward
 
+
 def backpropogate(node: Node, reward: float) -> None:
     """Backpropagate the reward up the tree."""
     while node is not None:
         node.visits += 1
         node.total_reward += reward
         node = node.parent
+
 
 def mcts(
     root_env,
@@ -99,10 +101,10 @@ def mcts(
     actions = []
     for _ in root_env.action_space:
         actions.append(expand(root, root_env))
-    
+
     for _ in range(iterations):
-        node = random.choice(actions)  # Randomly select one of the expanded nodes   
-        first_action = node.action    
+        node = random.choice(actions)  # Randomly select one of the expanded nodes
+        first_action = node.action
 
         reward = simulate(root_env.clone(), first_action, rollout_depth=rollout_depth)
         backpropogate(node, reward)
@@ -118,11 +120,12 @@ class MCTSRandomAgent(AbstractAgent):
     """Monte Carlo Tree Search agent."""
 
     def __init__(
-        self, iterations: int = 500, rollout_depth: int = 10
+        self,
+        config: Config,
     ):
         """Initialize the MCTS agent with parameters."""
-        self.iterations = iterations
-        self.rollout_depth = rollout_depth
+        self.iterations = config.mcts_iterations
+        self.rollout_depth = config.mcts_rollout_depth
 
     def select_action(self, env):
         """Select an action using Monte Carlo Tree Search."""
