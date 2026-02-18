@@ -38,10 +38,20 @@ The algorithm can be evaluated against random and greedy algorithms (not totally
 
 1. Install dependencies in requirements.txt.
 
-2. Run [run_experiment.py](run_experiment.py).
+2. Run [run_experiment.py](run_experiment.py) with a config file. Example: `python run_experiment.py --config configs/default.yaml `. Premade config files can be found in [configs/](configs), or you can make your own.
 
 3. A visualization of a trial with each agent will pop up. The blue square is the agent, red are obstacles, and green is the goal. You can exit by pressing 'q'. Note: The MCTS agents will take a few minutes to run.
 
 4. After the visualizations have been completed, a box and wisker plot will show the distribution of scores for each agent. 
 
 5. After the previous plot is closed, a bar plot will show the number of times each agent successfully reached the goal without hitting an obstacle. 
+
+### Interpretation of Results
+
+The random agent rarely reaches the goal, and often hits an obstacle, ending the trial. This agent has the worst scores compared to the other algorithms since it can take a lot of steps before the trial ends. 
+
+The greedy algorithm will always take the most efficient path to the goal without trying to avoid obstacles. As shown in the box and whisker plot, greedy gets some of the higest scores, but has a lower average score since it hits obstacles more often. 
+
+The MCTS - Random does pretty well. It reaches the goal a majority of the time, and has a better score variance than greedy. Since it avoids obstacles, the movement cost can drive up the score some. Due to stochasticity, there are also sometimes outliers where the score is really bad. 
+
+The MCTS - UCT does better than MCTS - Random. It reaches the goal more often and has a better average score. With the default config, this algorithm is the most successful at reaching the goal. 
