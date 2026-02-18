@@ -64,3 +64,5 @@ The greedy algorithm will always take the most efficient path to the goal withou
 The MCTS - Random does pretty well. It reaches the goal a majority of the time, and has a better score variance than greedy. Since it avoids obstacles, the movement cost can drive up the score some. Due to stochasticity, there are also sometimes outliers where the score is really bad. 
 
 The MCTS - UCT does better than MCTS - Random. It reaches the goal more often and has a better average score. With the default config, this algorithm is the most successful at reaching the goal. 
+
+While MCTS does the best at this task, it does take longer to run (something that could be adjusted with depth and iterations to some extent). It also prioritizes avoiding obstacles more than greedy does, which can make the agent take more steps to reach the goal. Even with these shortcomings, MCTS is significanly more successful at reaching the goal. 
