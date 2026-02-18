@@ -6,7 +6,6 @@ import time
 from agent import AbstractAgent
 from baselines import GreedyAgent, RandomAgent
 from env import GridWorld
-from mcts import MCTSAgent
 from mcts_random import MCTSRandomAgent
 from mcts_uct import MCTSUctAgent
 from visualize import visualize_environment
