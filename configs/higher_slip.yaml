@@ -1,5 +1,5 @@
 grid_size: 10
-slip_prob: 0.3
+slip_prob: 0.5
 num_obstacles: 5
 obstacle_move_prob: 0.7
 goal_move_prob: 0.0

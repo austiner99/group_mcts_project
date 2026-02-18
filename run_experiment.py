@@ -57,9 +57,9 @@ if __name__ == "__main__":
         config = load_config(args.config)
         print(f"Loaded configuration from {args.config}")
 
-    # Example usage
     env = GridWorld(config=config)
     NUM_TRIALS = config.num_trials
+    size = config.grid_size
 
     print("\n============== Random Agent ==============")
 
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     random_scores, random_success, best_random_run = run_experiment(env, random_agent, num_trials=NUM_TRIALS)
 
     random_state_vec = best_random_run
-    visualize_environment(10, random_state_vec, figure_title="Random Agent")
+    visualize_environment(size, random_state_vec, figure_title="Random Agent")
 
     print("\n============= Greedy Agent ==============")
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     greedy_scores, greedy_success, best_greedy_run = run_experiment(env, greedy_agent, num_trials=NUM_TRIALS)
 
     greedy_state_vec = best_greedy_run
-    visualize_environment(10, greedy_state_vec, figure_title="Greedy Agent")
+    visualize_environment(size, greedy_state_vec, figure_title="Greedy Agent")
 
     print("\n============= MCTS Agent - Random ==============")
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     )
 
     mcts_state_vec = best_mcts_run
-    visualize_environment(10, mcts_state_vec, figure_title="MCTS Agent - Random")
+    visualize_environment(size, mcts_state_vec, figure_title="MCTS Agent - Random")
 
     print("\n============= MCTS Agent - UCT ==============")
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     mcts_uct_scores, mcts_uct_success, best_mcts_uct_run = run_experiment(env, mcts_uct_agent, num_trials=NUM_TRIALS)
 
     mcts_uct_state_vec = best_mcts_uct_run
-    visualize_environment(10, mcts_uct_state_vec, figure_title="MCTS Agent - UCT")
+    visualize_environment(size, mcts_uct_state_vec, figure_title="MCTS Agent - UCT")
 
     # Box and whisker plot for score distribution
     plt.figure(figsize=(8, 6))
