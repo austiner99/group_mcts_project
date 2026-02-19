@@ -1,5 +1,6 @@
 # Group Monte Carlo Tree Search (MCTS) Project
 ## Algorithms for Decision Making Class
+## Austin Erickson, Melissa Kretchmer, & Damon Tingey
 ### Description of Problem and Reasoning for MCTS Implementation
 This repository is for the code for this project and for coordination amongst group members. 
 
